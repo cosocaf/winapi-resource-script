@@ -1,0 +1,14 @@
+.vscode/**
+.vscode-test/**
+src/**
+test/**
+build/test/**
+.eslintrc.yml
+.gitignore
+.prettierignore
+.prettierrc.yml
+tsconfig.json
+node_modules/**/README.md
+node_modules/**/CHANGELOG.md
+**/*.ts
+**/*.map

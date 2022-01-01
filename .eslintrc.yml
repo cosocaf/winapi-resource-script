@@ -1,0 +1,36 @@
+root: true
+env:
+  es2021: true
+  node: true
+extends:
+  - eslint:recommended
+  - plugin:@typescript-eslint/recommended
+  - plugin:@typescript-eslint/recommended-requiring-type-checking
+  - prettier
+parser: "@typescript-eslint/parser"
+parserOptions:
+  project: tsconfig.json
+  sourceType: module
+plugins:
+  - "@typescript-eslint"
+rules:
+  no-unused-var: off
+  "@typescript-eslint/no-unused-vars":
+    - error
+    - argsIgnorePattern: ^_
+  eqeqeq:
+    - error
+    - always
+    - "null": ignore
+  prefer-const: error
+  "@typescript-eslint/member-delimiter-style":
+    - error
+    - multiline:
+        delimiter: semi
+        requireLast: true
+      singleline:
+        delimiter: semi
+        requireLast: false
+  "@typescript-eslint/semi":
+    - error
+    - always

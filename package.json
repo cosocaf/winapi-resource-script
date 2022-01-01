@@ -1,0 +1,71 @@
+{
+  "name": "winapi-resource-script",
+  "displayName": "WinAPI Resource Script",
+  "description": "This extension provides support for the winapi resource script.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.46.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cosocaf/vscode-winapi-resource-script"
+  },
+  "bugs": {
+    "url": "https://github.com/cosocaf/vscode-winapi-resource-script/issues"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "winapi-resource-script",
+    "winapi",
+    "win32",
+    "rc",
+    "resource-script",
+    "resource-file"
+  ],
+  "preview": true,
+  "activationEvents": [
+    "onLanguage:rc"
+  ],
+  "main": "./build/extension.js",
+  "scripts": {
+    "build": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint --ext ts src",
+    "prettier": "prettier \"**/*.ts\""
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "rc",
+        "aliases": [
+          "WinAPI Resource Script",
+          "rc"
+        ],
+        "extensions": [
+          ".rc"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "rc",
+        "scopeName": "source.rc",
+        "path": "./rc.tmLanguage.json"
+      }
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.5",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
+    "eslint": "^8.5.0",
+    "eslint-config-prettier": "^8.3.0",
+    "prettier": "^2.5.1",
+    "typescript": "^4.5.4",
+    "vsce": "^2.6.0"
+  }
+}
