@@ -1,0 +1,246 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "WinAPI Resource Script",
+  "patterns": [
+    { "include": "#predefined-macros" },
+    { "include": "#preprocessor-directives" },
+    { "include": "#resource-definitions" },
+    { "include": "#comments" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.rc",
+          "match": "//.*"
+        },
+        {
+          "name": "comment.block.rc",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "predefined-macros": {
+      "patterns": [
+        {
+          "name": "entity.name.function.preprocessor.predefined.rc",
+          "match": "\\bRC_INVOKED\\b"
+        }
+      ]
+    },
+    "preprocessor-directives": {
+      "patterns": [
+        {
+          "name": "meta.preprocessor.include.rc",
+          "match": "^\\s*(#include)\\s+(\".*\"|<.*>)",
+          "captures": {
+            "1": { "name": "keyword.control.directive.include.rc" },
+            "2": {
+              "patterns": [
+                {
+                  "name": "string.quoted.other.lt-gt.include.rc",
+                  "match": "<.*>"
+                },
+                {
+                  "name": "string.quoted.double.include.rc",
+                  "match": "\".*\""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "meta.preprocessor.define.rc",
+          "match": "^\\s*(#define)\\s+(\\w+)\\s+(.*)",
+          "captures": {
+            "1": { "name": "keyword.control.directive.define.rc" },
+            "2": { "name": "entity.name.macro.preprocessor.rc" },
+            "3": {
+              "patterns": [{ "include": "$self" }]
+            }
+          }
+        },
+        {
+          "name": "meta.preprocessor.undef.rc",
+          "match": "^\\s*(#undef)\\s+(\\w+)",
+          "captures": {
+            "1": { "name": "keyword.control.directive.undef.rc" },
+            "2": { "name": "entity.name.macro.preprocessor.rc" }
+          }
+        },
+        {
+          "name": "meta.preprocessor.conditional.if.rc",
+          "match": "^\\s*(#if)\\s+(.*)",
+          "captures": {
+            "1": { "name": "keyword.control.directive.conditional.if.rc" },
+            "2": {
+              "patterns": [{ "include": "$self" }]
+            }
+          }
+        },
+        {
+          "name": "meta.preprocessor.conditional.ifdef.rc",
+          "match": "^\\s*(#ifdef)\\s+(\\w+)",
+          "captures": {
+            "1": { "name": "keyword.control.directive.conditional.ifdef.rc" },
+            "2": { "name": "entity.name.macro.preprocessor.rc" }
+          }
+        },
+        {
+          "name": "meta.preprocessor.conditional.ifndef.rc",
+          "match": "^\\s*(#ifndef)\\s+(\\w+)",
+          "captures": {
+            "1": { "name": "keyword.control.directive.conditional.ifndef.rc" },
+            "2": { "name": "entity.name.macro.preprocessor.rc" }
+          }
+        },
+        {
+          "name": "meta.preprocessor.conditional.elif.rc",
+          "match": "^\\s*(#elif)\\s+(.*)",
+          "captures": {
+            "1": { "name": "keyword.control.directive.conditional.elif.rc" },
+            "2": {
+              "patterns": [{ "include": "$self" }]
+            }
+          }
+        },
+        {
+          "name": "keyword.control.directive.conditional.else.rc",
+          "match": "^\\s*(#else)\\b"
+        },
+        {
+          "name": "keyword.control.directive.conditional.endif.rc",
+          "match": "^\\s*(#endif)\\b"
+        }
+      ]
+    },
+    "resource-definitions": {
+      "patterns": [
+        {
+          "name": "meta.definition.accelerators.rc",
+          "begin": "^\\s*(?:(\\w+)\\s+)(ACCELERATORS)(?:\\s+(.*))?({)",
+          "beginCaptures": {
+            "1": {
+              "patterns": [
+                { "include": "#identifiers" },
+                { "include": "#numerics" }
+              ]
+            },
+            "2": {
+              "name": "storage.type.accelerators.rc"
+            },
+            "3": {
+              "patterns": [{ "include": "#optional-statements" }]
+            },
+            "4": {
+              "name": "punctuation.definition.body.begin.rc"
+            }
+          },
+          "end": "}",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.body.end.rc"
+            }
+          },
+          "patterns": [{ "include": "#accelerators-body" }]
+        }
+      ]
+    },
+    "accelerators-body": {
+      "name": "meta.definition.accelerators.body.rc",
+      "match": "^\\s*(\\w+|\".*\")\\s*,\\s*(\\w+)(?:\\s*,\\s*(VIRTKEY|ASCII))?((?:\\s*,\\s*\\w+)*)",
+      "captures": {
+        "1": {
+          "patterns": [{ "include": "#key-events" }]
+        },
+        "2": {
+          "patterns": [
+            { "include": "#identifiers" },
+            { "include": "#numerics" }
+          ]
+        },
+        "3": {
+          "name": "storage.modifier.accelerators.type.rc"
+        },
+        "4": {
+          "patterns": [{ "include": "#accelerators-options" }]
+        }
+      }
+    },
+    "accelerators-options": {
+      "patterns": [
+        {
+          "name": "storage.modifier.accelerators.option.rc",
+          "match": "\\b(NOINVERT|ALT|SHIFT|CONTROL)\\b"
+        },
+        { "include": "#common-resource-attributes" }
+      ]
+    },
+    "optional-statements": {
+      "comment": "TODO"
+    },
+    "key-events": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.key.rc",
+          "match": "\"\\^?.\""
+        },
+        { "include": "#numerics" },
+        { "include": "#virtual-keys" }
+      ]
+    },
+    "common-resource-attributes": {
+      "patterns": [
+        {
+          "name": "storage.modifier.common.load.rc",
+          "match": "\\b(PRELOAD|LOADONCALL)\\b"
+        },
+        {
+          "name": "storage.modifier.common.memory.rc",
+          "match": "\\b(FIXED|MOVEABLE|DISCARDABLE|PURE|IMPURE|SHARED|NONSHARED)\\b"
+        }
+      ]
+    },
+    "virtual-keys": {
+      "name": "entity.name.function.preprocessor.vkey.rc",
+      "match": "\\b(VK_LBUTTON|VK_RBUTTON|VK_CANCEL|VK_MBUTTON|VK_XBUTTON1|VK_XBUTTON2|VK_BACK|VK_TAB|VK_CLEAR|VK_RETURN|VK_SHIFT|VK_CONTROL|VK_MENU|VK_PAUSE|VK_CAPITAL|VK_KANA|VK_HANGUEL|VK_HANGUL|VK_IME_ON|VK_JUNJA|VK_FINAL|VK_HANJA|VK_KANJI|VK_IME_OFF|VK_ESCAPE|VK_CONVERT|VK_NONCONVERT|VK_ACCEPT|VK_MODECHANGE|VK_SPACE|VK_PRIOR|VK_NEXT|VK_END|VK_HOME|VK_LEFT|VK_UP|VK_RIGHT|VK_DOWN|VK_SELECT|VK_PRINT|VK_EXECUTE|VK_SNAPSHOT|VK_INSERT|VK_DELETE|VK_HELP|VK_LWIN|VK_RWIN|VK_APPS|VK_SLEEP|VK_NUMPAD0|VK_NUMPAD1|VK_NUMPAD2|VK_NUMPAD3|VK_NUMPAD4|VK_NUMPAD5|VK_NUMPAD6|VK_NUMPAD7|VK_NUMPAD8|VK_NUMPAD9|VK_MULTIPLY|VK_ADD|VK_SEPARATOR|VK_SUBTRACT|VK_DECIMAL|VK_DIVIDE|VK_F1|VK_F2|VK_F3|VK_F4|VK_F5|VK_F6|VK_F7|VK_F8|VK_F9|VK_F10|VK_F11|VK_F12|VK_F13|VK_F14|VK_F15|VK_F16|VK_F17|VK_F18|VK_F19|VK_F20|VK_F21|VK_F22|VK_F23|VK_F24|VK_NUMLOCK|VK_SCROLL|VK_LSHIFT|VK_RSHIFT|VK_LCONTROL|VK_RCONTROL|VK_LMENU|VK_RMENU|VK_BROWSER_BACK|VK_BROWSER_FORWARD|VK_BROWSER_REFRESH|VK_BROWSER_STOP|VK_BROWSER_SEARCH|VK_BROWSER_FAVORITES|VK_BROWSER_HOME|VK_VOLUME_MUTE|VK_VOLUME_DOWN|VK_VOLUME_UP|VK_MEDIA_NEXT_TRACK|VK_MEDIA_PREV_TRACK|VK_MEDIA_STOP|VK_MEDIA_PLAY_PAUSE|VK_LAUNCH_MAIL|VK_LAUNCH_MEDIA_SELECT|VK_LAUNCH_APP1|VK_LAUNCH_APP2|VK_OEM_1|VK_OEN_PLUS|VK_OEN_COMMA|VK_OEM_MINUS|VK_OEM_PERIOD|VK_OEM_2|VK_OEM_3|VK_OEM_4|VK_OEM_5|VK_OEM_6|VK_OEM_7|VK_OEM_8|VK_OEM_102|VK_PROCESSKEY|VK_PACKET|VK_ATTN|VK_CRSEL|VK_EXSEL|VK_EREOF|VK_PLAY|VK_ZOOM|VK_NONAME|VK_PA1|VK_OEM_CLEAR)\\b"
+    },
+    "identifiers": {
+      "name": "variable.other.rc",
+      "match": "\\b[^\\d&&\\w]\\w*\\b"
+    },
+    "numerics": {
+      "patterns": [
+        {
+          "name": "constant.numeric.decimal.rc",
+          "match": "\\b(0|[1-9]\\d*)\\b"
+        },
+        {
+          "name": "constant.numeric.binary.rc",
+          "match": "\\b0b[01]+\\b"
+        },
+        {
+          "name": "constant.numeric.octal.rc",
+          "match": "\\b0[0-7]+\\b"
+        },
+        {
+          "name": "constant.numeric.hex.rc",
+          "match": "\\b0x[0-9a-fA-F]+\\b"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.rc",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.rc",
+          "match": "\\\\."
+        }
+      ]
+    }
+  },
+  "scopeName": "source.rc"
+}
