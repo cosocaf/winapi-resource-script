@@ -118,7 +118,7 @@
     "resource-definitions": {
       "patterns": [
         {
-          "name": "meta.definition.accelerators.rc",
+          "name": "meta.definition.resource.accelerators.rc",
           "begin": "^\\s*(?:(\\w+)\\s+)(ACCELERATORS)(?:\\s+(.*))?({)",
           "beginCaptures": {
             "1": {
@@ -144,6 +144,10 @@
             }
           },
           "patterns": [{ "include": "#accelerators-body" }]
+        },
+        {
+          "name": "meta.definitions.resource.bitmap.rc",
+          "match": "^\\s*(?:(\\w+)\\s+)(BITMAP)"
         }
       ]
     },
@@ -191,6 +195,7 @@
       ]
     },
     "common-resource-attributes": {
+      "comment": "These attributes are only supported by win16, and are simply ignored by win32.",
       "patterns": [
         {
           "name": "storage.modifier.common.load.rc",

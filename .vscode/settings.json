@@ -2,8 +2,20 @@
   "files.exclude": {
     "build": false
   },
+  "files.associations": {
+    "*.h": "cpp",
+    "*.txt": "plaintext",
+    "CMakeLists.txt": "cmake",
+    "*.html": "html",
+    "iostream": "cpp"
+  },
   "search.exclude": {
     "build": true
   },
-  "typescript.tsdk": "./node_modules/typescript/lib"
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "eslint.workingDirectories": ["./vscode-client"],
+  "prettier.configPath": "vscode-client/.prettierrc.yml",
+  "cmake.sourceDirectory": "${workspaceFolder}/language-server",
+  "cmake.buildDirectory": "${workspaceFolder}/language-server/build",
+  "cmake.buildTask": true
 }
