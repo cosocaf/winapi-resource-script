@@ -1,5 +1,6 @@
 {
   "name": "winapi-resource-script",
+  "private": true,
   "displayName": "WinAPI Resource Script",
   "description": "This extension provides support for the winapi resource script.",
   "version": "0.0.1",
@@ -60,6 +61,7 @@
   },
   "devDependencies": {
     "@types/node": "^17.0.5",
+    "@types/vscode": "^1.63.1",
     "@typescript-eslint/eslint-plugin": "^5.8.1",
     "@typescript-eslint/parser": "^5.8.1",
     "eslint": "^8.5.0",
@@ -67,5 +69,8 @@
     "prettier": "^2.5.1",
     "typescript": "^4.5.4",
     "vsce": "^2.6.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^7.0.0"
   }
 }

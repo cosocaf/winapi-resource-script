@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Language Server",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${cwd}/build/src/Debug/rc-language-server.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "console": "externalTerminal",
+      "preLaunchTask": "build-language-server"
+    },
+  ]
+}

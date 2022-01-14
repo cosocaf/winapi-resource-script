@@ -1,0 +1,12 @@
+BasedOnStyle: Google
+AccessModifierOffset: -2
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
+BreakConstructorInitializersBeforeComma: true
+ColumnLimit: 80
+ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 2
+IndentCaseLabels: true
+IndentWidth: 2
+NamespaceIndentation: All
+SpacesBeforeTrailingComments: 1
