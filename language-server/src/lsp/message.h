@@ -3,8 +3,7 @@
 
 #include <optional>
 
-#include "json/element.h"
-#include "json/union.h"
+#include "json/json.h"
 
 namespace winrsls::lsp {
   struct Message {
@@ -19,8 +18,10 @@ namespace winrsls::lsp {
     json::Union<json::Number, json::String> id;
     json::String method;
     std::optional<json::Union<json::Array, json::Object>> params;
-    Request(const json::Union<json::Number, json::String>& id, const json::String& method,
-            const std::optional<json::Union<json::Array, json::Object>>& params);
+    Request(
+      const json::Union<json::Number, json::String>& id,
+      const json::String& method,
+      const std::optional<json::Union<json::Array, json::Object>>& params);
     Request(json::Union<json::Number, json::String>&& id, json::String&& method,
             std::optional<json::Union<json::Array, json::Object>>&& params);
     virtual json::Element toJsonElement() const override;
@@ -36,9 +37,9 @@ namespace winrsls::lsp {
     json::String method;
     std::optional<json::Union<json::Array, json::Object>> params;
 
-    Notification(
-      json::String method,
-      std::optional<json::Union<json::Array, json::Object>> params = std::nullopt);
+    Notification(json::String method,
+                 std::optional<json::Union<json::Array, json::Object>> params =
+                   std::nullopt);
     virtual json::Element toJsonElement() const override;
   };
 
@@ -69,12 +70,13 @@ namespace winrsls::lsp {
   struct Response : public Message {
     json::Union<json::Number, json::String, json::Null> id;
     std::optional<json::Union<json::String, json::Number, json::Boolean,
-                               json::Object, json::Null>>
+                              json::Object, json::Null>>
       result;
     std::optional<ResponseError> error;
-    Response(const json::Union<json::Number, json::String, json::Null>& id,
-             const json::Union<json::String, json::Number, json::Boolean,
-                                json::Object, json::Null>& result = json::Null());
+    Response(
+      const json::Union<json::Number, json::String, json::Null>& id,
+      const json::Union<json::String, json::Number, json::Boolean, json::Object,
+                        json::Null>& result = json::Null());
     Response(const json::Union<json::Number, json::String, json::Null>& id,
              const std::optional<ResponseError>& error);
     virtual json::Element toJsonElement() const override;
