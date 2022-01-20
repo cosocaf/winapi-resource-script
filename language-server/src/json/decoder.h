@@ -1,3 +1,15 @@
+/**
+ * @file decoder.h
+ * @author cosocaf (cosocaf@gmail.com)
+ * @brief Define a class to decode JSON.
+ * @version 0.1
+ * @date 2022-01-20
+ *
+ * @copyright Copyright (c) 2022 cosocaf
+ * This software is released under the MIT license.
+ * See https://opensource.org/licenses/MIT
+ */
+
 #ifndef WINRSLS_JSON_DECODER_H_
 #define WINRSLS_JSON_DECODER_H_
 
@@ -6,7 +18,7 @@
 #include <string_view>
 #include <unordered_set>
 
-#include "element.h"
+#include "json.h"
 #include "result.h"
 
 namespace winrsls::json {

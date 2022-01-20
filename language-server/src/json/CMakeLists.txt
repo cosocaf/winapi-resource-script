@@ -1,3 +1,6 @@
+# This software is released under the MIT license.
+# See https://opensource.org/licenses/MIT
+
 cmake_minimum_required(VERSION 3.13.0)
 
 add_library(json

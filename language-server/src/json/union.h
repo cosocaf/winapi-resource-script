@@ -1,3 +1,15 @@
+/**
+ * @file union.h
+ * @author cosocaf (cosocaf@gmail.com)
+ * @brief Defines a type to represent a composite type of JSON.
+ * @version 0.1
+ * @date 2022-01-20
+ *
+ * @copyright Copyright (c) 2022 cosocaf
+ * This software is released under the MIT license.
+ * See https://opensource.org/licenses/MIT
+ */
+
 #ifndef WINRSLS_JSON_UNION_H_
 #define WINRSLS_JSON_UNION_H_
 
@@ -5,54 +17,48 @@
 #include <string>
 #include <variant>
 
-#include "element_type.h"
+#include "../variant_cast.h"
+#include "element_like.h"
+#include "null.h"
 
 namespace winrsls::json {
   template <typename T, typename... U>
   inline constexpr bool is_union_element_type_v =
-    is_any_of_v<std::remove_cv_t<T>, U...>;
+    std::disjunction_v<std::is_same<std::remove_cvref_t<T>, U>...>;
   template <typename T, typename... U>
   concept union_element_type = is_union_element_type_v<T, U...>;
 
-  template <element_type... Elems>
+  template <element_like... Elems>
   class Union {
+  public:
     std::variant<Elems...> value;
-    friend class Element;
 
   public:
-    Union(const Union& other) : value(other.value) {}
-    Union(Union&& other) : value(std::move(other.value)) {}
+    template <element_like... T>
+    Union(const Union<T...>& other)
+      : value(variant_cast<Elems...>(other.value)) {}
+    template <element_like... T>
+    Union(Union<T...>&& other) noexcept
+      : value(variant_cast<Elems...>(std::move(other.value))) {}
+
     template <union_element_type<Elems...> T>
     Union(const T& value) : value(value) {}
     template <union_element_type<Elems...> T>
-    Union(T&& value) : value(std::move(value)) {}
+    Union(T&& value) noexcept : value(std::move(value)) {}
+
     Union(const std::variant<Elems...>& value) : value(value) {}
-    Union(std::variant<Elems...>&& value) : value(std::move(value)) {}
+    Union(std::variant<Elems...>&& value) noexcept : value(std::move(value)) {}
 
-    Union& operator=(const Union& other) {
-      value = other.value;
-      return *this;
-    }
-    Union& operator=(Union&& other) {
-      value = std::move(std::move(other.value));
-      return *this;
-    }
-
-    template <typename... To>
-    operator Union<To...>() const {
-      return std::visit([](auto&& arg) -> Union<To...> { return arg; }, value);
-    }
-
-    template <element_type T>
-    bool is() const {
+    template <element_like T>
+    bool is() const noexcept {
       return std::holds_alternative<T>(value);
     }
-    template <element_type T>
+    template <element_like T>
     const T& as() const {
       assert(is<T>());
       return std::get<T>(value);
     }
-    template <element_type T>
+    template <element_like T>
     T& as() {
       assert(is<T>());
       return std::get<T>(value);
@@ -62,6 +68,9 @@ namespace winrsls::json {
       return std::visit([](auto&& v) { return v.toJsonString(); }, value);
     }
   };
+
+  template <element_like... T>
+  using Nullable = Union<T..., Null>;
 } // namespace winrsls::json
 
 #endif // WINRSLS_JSON_UNION_H_

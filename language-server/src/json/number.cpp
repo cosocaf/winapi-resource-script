@@ -1,3 +1,15 @@
+/**
+ * @file number.cpp
+ * @author cosocaf (cosocaf@gmail.com)
+ * @brief Implementation of number.h
+ * @version 0.1
+ * @date 2022-01-20
+ *
+ * @copyright Copyright (c) 2022 cosocaf
+ * This software is released under the MIT license.
+ * See https://opensource.org/licenses/MIT
+ */
+
 #include "number.h"
 
 #include <cassert>
@@ -6,11 +18,23 @@
 #include <numeric>
 
 namespace winrsls::json {
-  Number::Number(int value) : kind(Kind::Integer), value{.integer = value} {}
-  Number::Number(int64_t value)
+  Number::Number(int value) noexcept
     : kind(Kind::Integer), value{.integer = value} {}
-  Number::Number(double_t value)
+  Number::Number(int64_t value) noexcept
+    : kind(Kind::Integer), value{.integer = value} {}
+  Number::Number(double_t value) noexcept
     : kind(Kind::Decimal), value{.decimal = value} {}
+
+  int64_t Number::asInt() const noexcept { return value.integer; }
+  double_t Number::asDec() const noexcept { return value.decimal; }
+  int64_t Number::toInt() const noexcept {
+    return kind == Kind::Integer ? value.integer
+                                 : static_cast<int64_t>(value.decimal);
+  }
+  double_t Number::toDec() const noexcept {
+    return kind == Kind::Decimal ? value.decimal
+                                 : static_cast<double_t>(value.integer);
+  }
 
   std::string Number::toJsonString() const {
     char result[128];
@@ -20,6 +44,7 @@ namespace winrsls::json {
         auto [ptr, ec] =
           std::to_chars(std::begin(result), std::end(result), value.integer);
         end = ptr;
+        break;
       }
       case Kind::Decimal: {
         auto [ptr, ec] =
@@ -38,7 +63,7 @@ namespace winrsls::json {
                             fmax(static_cast<T>(1), fmax(fabs(a), fabs(b)));
   }
 
-  bool operator==(const Number& lhs, const Number& rhs) {
+  bool operator==(const Number& lhs, const Number& rhs) noexcept {
     if (lhs.kind == rhs.kind) {
       switch (lhs.kind) {
         case Number::Kind::Integer:
