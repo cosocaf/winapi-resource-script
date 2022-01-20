@@ -6,7 +6,7 @@
 
 namespace winrsls {
   template <typename OK, typename Error>
-  class Result {
+  class [[nodiscard]] Result {
     enum struct Tag { None, OK, Error };
     Tag tag;
     union {
@@ -41,7 +41,7 @@ namespace winrsls {
       }
       tag = Tag::None;
     }
-    Result& operator=(const Result& result) {
+    Result& operator=(const Result& result) & {
       if (&result != this) {
         switch (result.tag) {
           case Tag::None: this->~Result(); break;
@@ -52,7 +52,7 @@ namespace winrsls {
       }
       return *this;
     }
-    Result& operator=(Result&& result) {
+    Result& operator=(Result&& result) & {
       assert(this != &result);
       switch (result.tag) {
         case Tag::None: this->~Result(); break;
@@ -65,7 +65,7 @@ namespace winrsls {
     }
     Result(const OK& ok) : tag(Tag::OK), ok(ok) {}
     Result(OK&& ok) : tag(Tag::OK), ok(std::move(ok)) {}
-    Result& operator=(const OK& ok) {
+    Result& operator=(const OK& ok) & {
       if (tag != Tag::OK) {
         this->~Result();
         new (this) Result(ok);
@@ -74,7 +74,7 @@ namespace winrsls {
       }
       return *this;
     }
-    Result& operator=(OK&& ok) {
+    Result& operator=(OK&& ok) & {
       if (tag != Tag::OK) {
         this->~Result();
         new (this) Result(std::move(ok));
@@ -85,7 +85,7 @@ namespace winrsls {
     }
     Result(const Error& error) : tag(Tag::Error), error(error) {}
     Result(Error&& error) : tag(Tag::Error), error(std::move(error)) {}
-    Result& operator=(const Error& error) {
+    Result& operator=(const Error& error) & {
       if (tag != Tag::Error) {
         this->~Result();
         new (this) Result(error);
@@ -94,7 +94,7 @@ namespace winrsls {
       }
       return *this;
     }
-    Result& operator=(Error&& error) {
+    Result& operator=(Error&& error) & {
       if (tag != Tag::Error) {
         this->~Result();
         new (this) Result(std::move(error));
@@ -143,11 +143,11 @@ namespace winrsls {
     }
   };
   template <typename OK>
-  decltype(auto) ok(OK&& ok) {
+  decltype(auto) [[nodiscard]] ok(OK&& ok) {
     return ok_t(std::forward<OK>(ok));
   }
   template <typename OK = _>
-  ok_t<_> ok() {
+  ok_t<_> [[nodiscard]] ok() {
     return ok(_{});
   }
 
@@ -163,7 +163,7 @@ namespace winrsls {
     }
   };
   template <typename Error>
-  decltype(auto) error(Error&& error) {
+  decltype(auto) [[nodiscard]] error(Error&& error) {
     return error_t(std::forward<Error>(error));
   }
 } // namespace winrsls
