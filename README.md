@@ -6,7 +6,7 @@ and the source code for the language server can be found [here](./language-serve
 
 ## License
 
-[MIT](./LICENSE)
+This software is released under the MIT License, see [LICENSE](./LICENSE)
 
 ## Author
 
