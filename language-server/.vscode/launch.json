@@ -6,7 +6,10 @@
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${cwd}/build/src/Debug/rc-language-server.exe",
-      "args": [],
+      "args": [
+        "--input",
+        "${cwd}/tmp/input.txt"
+      ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],

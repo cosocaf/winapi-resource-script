@@ -15,7 +15,5 @@
   "typescript.tsdk": "./node_modules/typescript/lib",
   "eslint.workingDirectories": ["./vscode-client"],
   "prettier.configPath": "vscode-client/.prettierrc.yml",
-  "cmake.sourceDirectory": "${workspaceFolder}/language-server",
-  "cmake.buildDirectory": "${workspaceFolder}/language-server/build",
-  "cmake.buildTask": true
+  "cmake.sourceDirectory": "${workspaceFolder}/language-server"
 }
