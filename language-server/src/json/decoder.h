@@ -18,6 +18,7 @@
 #include <string_view>
 #include <unordered_set>
 
+#include "error_info.h"
 #include "json.h"
 #include "result.h"
 
@@ -29,16 +30,16 @@ namespace winrsls::json {
 
   public:
     Decoder(std::string_view data);
-    Result<Object, std::string> decode();
+    Result<Object, ErrorInfo> decode();
 
   private:
-    Result<String, std::string> parseString();
-    Result<Number, std::string> parseNumber();
-    Result<Boolean, std::string> parseBoolean();
-    Result<Null, std::string> parseNull();
-    Result<Array, std::string> parseArray();
-    Result<Object, std::string> parseObject();
-    Result<Element, std::string> parseElement();
+    Result<String, ErrorInfo> parseString();
+    Result<Number, ErrorInfo> parseNumber();
+    Result<Boolean, ErrorInfo> parseBoolean();
+    Result<Null, ErrorInfo> parseNull();
+    Result<Array, ErrorInfo> parseArray();
+    Result<Object, ErrorInfo> parseObject();
+    Result<Element, ErrorInfo> parseElement();
 
     char cur();
     char next();

@@ -25,18 +25,16 @@ namespace winrsls::json {
     ' ',
   };
 
-  Result<Object, std::string> Decoder::decode() {
-    using namespace std::string_literals;
-
+  Result<Object, ErrorInfo> Decoder::decode() {
     auto&& result = parseElement();
     if (!result) return error(std::move(result.err()));
     if (!result.get().is<Object>()) {
-      return error("Invalid Content: Failed to decode JSON."s);
+      return error(ERROR_INFO("Invalid Content: Failed to decode JSON."));
     }
 
     return ok(std::move(result.get().as<Object>()));
   }
-  Result<Element, std::string> Decoder::parseElement() {
+  Result<Element, ErrorInfo> Decoder::parseElement() {
     using namespace std::string_literals;
     const auto c = next();
     switch (c) {
@@ -82,16 +80,16 @@ namespace winrsls::json {
         return ok(Element(std::move(res.get())));
       }
       case '\0': {
-        return error(
-          "Invalid Content: Failed to decode JSON. Unexpected end."s);
+        return error(ERROR_INFO(
+          "Invalid Content: Failed to decode JSON. Unexpected end."));
       }
       default: {
-        return error(
-          "Invalid Content: Failed to decode JSON. Unexpected token: "s + c);
+        return error(ERROR_INFO(
+          "Invalid Content: Failed to decode JSON. Unexpected token: "s + c));
       }
     }
   }
-  Result<Object, std::string> Decoder::parseObject() {
+  Result<Object, ErrorInfo> Decoder::parseObject() {
     using namespace std::string_literals;
     assert(cur() == '{');
 
@@ -105,20 +103,20 @@ namespace winrsls::json {
     std::unordered_map<String, Element> kv;
     while (true) {
       if (c == '\0') {
-        return error(
-          "Invalid Content: Failed to decode JSON. Unexpected end."s);
+        return error(ERROR_INFO(
+          "Invalid Content: Failed to decode JSON. Unexpected end."));
       }
       if (c != '"') {
-        return error(
-          "Invalid Content: Failed to decode JSON. Unexpected token: "s + c);
+        return error(ERROR_INFO(
+          "Invalid Content: Failed to decode JSON. Unexpected token: "s + c));
       }
       auto&& key = parseString();
       if (!key) return error(std::move(key.err()));
 
       c = next();
       if (c != ':') {
-        return error(
-          "Invalid Content: Failed to decode JSON. Unexpected token: "s + c);
+        return error(ERROR_INFO(
+          "Invalid Content: Failed to decode JSON. Unexpected token: "s + c));
       }
       auto&& val = parseElement();
       if (!val) return error(std::move(val.err()));
@@ -131,14 +129,14 @@ namespace winrsls::json {
       } else if (c == '}') {
         break;
       } else {
-        return error(
-          "Invalid Content: Failed to decode JSON. Unexpected token: "s + c);
+        return error(ERROR_INFO(
+          "Invalid Content: Failed to decode JSON. Unexpected token: "s + c));
       }
     }
 
     return ok(Object(std::move(kv)));
   }
-  Result<Array, std::string> Decoder::parseArray() {
+  Result<Array, ErrorInfo> Decoder::parseArray() {
     using namespace std::string_literals;
     assert(cur() == '[');
 
@@ -152,8 +150,8 @@ namespace winrsls::json {
     std::vector<Element> elems;
     while (true) {
       if (c == '\0') {
-        return error(
-          "Invalid Content: Failed to decode JSON. Unexpected end."s);
+        return error(ERROR_INFO(
+          "Invalid Content: Failed to decode JSON. Unexpected end."));
       }
       --idx;
       auto&& elem = parseElement();
@@ -166,14 +164,14 @@ namespace winrsls::json {
       } else if (c == ']') {
         break;
       } else {
-        return error(
-          "Invalid Content: Failed to decode JSON. Unexpected token: "s + c);
+        return error(ERROR_INFO(
+          "Invalid Content: Failed to decode JSON. Unexpected token: "s + c));
       }
     }
 
     return ok(Array(std::move(elems)));
   }
-  Result<String, std::string> Decoder::parseString() {
+  Result<String, ErrorInfo> Decoder::parseString() {
     using namespace std::string_literals;
     assert(cur() == '"');
 
@@ -203,9 +201,9 @@ namespace winrsls::json {
               } else if (c >= 'a' && c <= 'f') {
                 code |= size_t(10 + c - 'a');
               } else {
-                return error(
+                return error(ERROR_INFO(
                   "Invalid Content: Failed to decode JSON. Unexpected token: "s +
-                  c);
+                  c));
               }
             }
             // ASCII characters
@@ -230,12 +228,12 @@ namespace winrsls::json {
             }
           }
           case '\0':
-            return error(
-              "Invalid Content: Failed to decode JSON. Unexpected end."s);
+            return error(ERROR_INFO(
+              "Invalid Content: Failed to decode JSON. Unexpected end."));
           default:
-            return error(
+            return error(ERROR_INFO(
               "Invalid Content: Failed to decode JSON. Unexpected token: "s +
-              c);
+              c));
         }
       } else if (c == '"') {
         return ok(String(std::move(str)));
@@ -244,15 +242,17 @@ namespace winrsls::json {
       }
     }
 
-    return error("Invalid Content: Failed to decode JSON. Unexpected end."s);
+    return error(
+      ERROR_INFO("Invalid Content: Failed to decode JSON. Unexpected end."));
   }
-  Result<Number, std::string> Decoder::parseNumber() {
+  Result<Number, ErrorInfo> Decoder::parseNumber() {
     using namespace std::string_literals;
     assert((cur() >= '0' && cur() <= '9') || cur() == '-');
 
     const auto& res = curWord();
     if (!res) {
-      return error("Invalid Content: Failed to decode JSON. Unexpected end."s);
+      return error(
+        ERROR_INFO("Invalid Content: Failed to decode JSON. Unexpected end."));
     }
 
     const auto& word = res.value();
@@ -260,15 +260,15 @@ namespace winrsls::json {
     const auto getErrorMessage = [](const std::errc& ec) {
       switch (ec) {
         case std::errc::invalid_argument:
-          return error(
-            "Invalid Content: Failed to decode JSON. Invalid Argument."s);
+          return error(ERROR_INFO(
+            "Invalid Content: Failed to decode JSON. Invalid Argument."));
         case std::errc::result_out_of_range:
-          return error(
-            "Invalid Content: Failed to decode JSON. Result Out Of Range."s);
+          return error(ERROR_INFO(
+            "Invalid Content: Failed to decode JSON. Result Out Of Range."));
         default:
-          return error(
+          return error(ERROR_INFO(
             "Internal Error: Failed to decode JSON. Unknown POSIX Error Code: "s +
-            std::to_string(static_cast<int>(ec)));
+            std::to_string(static_cast<int>(ec))));
       }
     };
 
@@ -294,15 +294,16 @@ namespace winrsls::json {
       return getErrorMessage(ec);
     }
 
-    return error(
-      "Invalid Content: Failed to decode JSON. Invalid number format."s);
+    return error(ERROR_INFO(
+      "Invalid Content: Failed to decode JSON. Invalid number format."));
   }
-  Result<Boolean, std::string> Decoder::parseBoolean() {
+  Result<Boolean, ErrorInfo> Decoder::parseBoolean() {
     using namespace std::string_literals;
 
     const auto res = curWord();
     if (!res) {
-      return error("Invalid Content: Failed to decode JSON. Unexpected end."s);
+      return error(
+        ERROR_INFO("Invalid Content: Failed to decode JSON. Unexpected end."));
     }
 
     if (res.value() == "true") {
@@ -310,22 +311,25 @@ namespace winrsls::json {
     } else if (res.value() == "false") {
       return ok(Boolean(false));
     }
-    return error("Invalid Content: Failed to decode JSON. Unexpected token: "s +
-                 std::string(res.value()));
+    return error(
+      ERROR_INFO("Invalid Content: Failed to decode JSON. Unexpected token: "s +
+                 std::string(res.value())));
   }
-  Result<Null, std::string> Decoder::parseNull() {
+  Result<Null, ErrorInfo> Decoder::parseNull() {
     using namespace std::string_literals;
 
     const auto res = curWord();
     if (!res) {
-      return error("Invalid Content: Failed to decode JSON. Unexpected end."s);
+      return error(
+        ERROR_INFO("Invalid Content: Failed to decode JSON. Unexpected end."));
     }
 
     if (res.value() == "null") {
       return ok(Null());
     }
-    return error("Invalid Content: Failed to decode JSON. Unexpected token: "s +
-                 std::string(res.value()));
+    return error(
+      ERROR_INFO("Invalid Content: Failed to decode JSON. Unexpected token: "s +
+                 std::string(res.value())));
   }
   char Decoder::cur() {
     if (idx == 0) return '\0';
