@@ -15,9 +15,7 @@
 
 #include <cassert>
 #include <initializer_list>
-#include <iostream>
 #include <optional>
-#include <ostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -233,8 +231,6 @@ namespace winrsls::json {
   };
 
   bool operator==(const Element& lhs, const Element& rhs);
-
-  std::ostream& operator<<(std::ostream& out, const Element& value);
 } // namespace winrsls::json
 
 #endif // WINRSLS_JSON_ELEMENT_H_

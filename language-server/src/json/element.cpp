@@ -120,8 +120,4 @@ namespace winrsls::json {
   bool operator==(const Element& lhs, const Element& rhs) {
     return Element::Storage::same(lhs.value, rhs.value);
   }
-
-  std::ostream& operator<<(std::ostream& out, const Element& value) {
-    return out << value.toJsonString();
-  }
 } // namespace winrsls::json
