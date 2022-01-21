@@ -25,7 +25,7 @@ namespace winrsls::json {
     friend bool operator==(const Boolean& lhs, const Boolean& rhs) noexcept;
 
   public:
-    Boolean(bool value) noexcept;
+    Boolean(bool value = false) noexcept;
 
     std::string toJsonString() const;
   };

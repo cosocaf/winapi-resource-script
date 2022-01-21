@@ -26,7 +26,7 @@ namespace winrsls::json {
     friend bool operator==(const String& lhs, const String& rhs) noexcept;
 
   public:
-    String(const std::string& value);
+    String(const std::string& value = std::string());
     String(std::string&& value) noexcept;
     String(std::string_view value);
     String(const char* value);

@@ -34,6 +34,8 @@ namespace winrsls::json {
     std::variant<Elems...> value;
 
   public:
+    Union() : value() {}
+
     template <element_like... T>
     Union(const Union<T...>& other)
       : value(variant_cast<Elems...>(other.value)) {}

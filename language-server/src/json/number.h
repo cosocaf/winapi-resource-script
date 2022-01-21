@@ -35,7 +35,7 @@ namespace winrsls::json {
     friend bool operator==(const Number& lhs, const Number& rhs) noexcept;
 
   public:
-    Number(int value) noexcept;
+    Number(int value = 0) noexcept;
     Number(int64_t value) noexcept;
     Number(double_t value) noexcept;
 
