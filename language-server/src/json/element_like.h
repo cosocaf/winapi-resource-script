@@ -14,6 +14,7 @@
 #define WINRSLS_JSON_ELEMENT_LIKE_H_
 
 #include <concepts>
+#include <ostream>
 #include <string>
 
 namespace winrsls::json {
@@ -22,6 +23,11 @@ namespace winrsls::json {
   concept element_like = requires(T element) {
     { element.toJsonString() } -> std::same_as<std::string>;
   };
+
+  template <element_like T>
+  std::ostream& operator<<(std::ostream& out, const T& element) {
+    return out << element.toJsonString();
+  }
 } // namespace winrsls::json
 
 #endif // WINRSLS_JSON_ELEMENT_LIKE_H_
