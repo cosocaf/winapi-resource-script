@@ -12,15 +12,4 @@
 
 #include "null.h"
 
-namespace winrsls::json {
-  std::string Null::toJsonString() const { return "null"; }
-
-  bool operator==([[maybe_unused]] const Null& lhs,
-                  [[maybe_unused]] const Null& rhs) noexcept {
-    return true;
-  }
-
-  std::ostream& operator<<(std::ostream& out, const Null& value) {
-    return out << value.toJsonString();
-  }
-} // namespace winrsls::json
+namespace winrsls::json {} // namespace winrsls::json

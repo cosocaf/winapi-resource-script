@@ -13,25 +13,25 @@
 #ifndef WINRSLS_JSON_NULL_H_
 #define WINRSLS_JSON_NULL_H_
 
-#include <ostream>
 #include <string>
 
 #include "element_like.h"
 
 namespace winrsls::json {
   class Null {
-    friend bool operator==(const Null& lhs, const Null& rhs) noexcept;
+    friend constexpr bool operator==(const Null& lhs, const Null& rhs) noexcept;
 
   public:
-    std::string toJsonString() const;
+    constexpr std::string toJsonString() const { return "null"; }
   };
 
   static_assert(element_like<Null>,
                 "Null does not satisfy the concept element_like.");
 
-  bool operator==(const Null& lhs, const Null& rhs) noexcept;
-
-  std::ostream& operator<<(std::ostream& out, const Null& value);
+  constexpr bool operator==([[maybe_unused]] const Null& lhs,
+                            [[maybe_unused]] const Null& rhs) noexcept {
+    return true;
+  }
 } // namespace winrsls::json
 
 #endif // WINRSLS_JSON_NULL_H_

@@ -13,7 +13,6 @@
 #ifndef WINRSLS_JSON_NUMBER_H_
 #define WINRSLS_JSON_NUMBER_H_
 
-#include <ostream>
 #include <string>
 
 #include "element_like.h"
@@ -32,12 +31,17 @@ namespace winrsls::json {
     Kind kind;
     Value value;
 
-    friend bool operator==(const Number& lhs, const Number& rhs) noexcept;
+    friend constexpr bool operator==(const Number& lhs,
+                                     const Number& rhs) noexcept;
 
   public:
-    Number(int value = 0) noexcept;
-    Number(int64_t value) noexcept;
-    Number(double_t value) noexcept;
+    constexpr Number() noexcept : value{.integer = 0}, kind(Kind::Integer) {}
+    constexpr Number(int value) noexcept
+      : kind(Kind::Integer), value{.integer = value} {}
+    constexpr Number(int64_t value) noexcept
+      : kind(Kind::Integer), value{.integer = value} {}
+    constexpr Number(double_t value) noexcept
+      : kind(Kind::Decimal), value{.decimal = value} {}
 
     /**
      * @brief Convert to integer type.
@@ -48,7 +52,7 @@ namespace winrsls::json {
      *
      * @return int64_t value
      */
-    int64_t asInt() const noexcept;
+    constexpr int64_t asInt() const noexcept { return value.integer; }
     /**
      * @brief Convert to decimal type.
      *
@@ -58,7 +62,7 @@ namespace winrsls::json {
      *
      * @return double_t value
      */
-    double_t asDec() const noexcept;
+    constexpr double_t asDec() const noexcept { return value.decimal; }
     /**
      * @brief Convert to integer type.
      *
@@ -67,7 +71,10 @@ namespace winrsls::json {
      *
      * @return int64_t value
      */
-    int64_t toInt() const noexcept;
+    constexpr int64_t toInt() const noexcept {
+      if (kind == Kind::Integer) return value.integer;
+      return static_cast<int64_t>(value.decimal);
+    }
     /**
      * @brief Convert to decimal type.
      *
@@ -76,7 +83,10 @@ namespace winrsls::json {
      *
      * @return double_t value
      */
-    double_t toDec() const noexcept;
+    constexpr double_t toDec() const noexcept {
+      if (kind == Kind::Decimal) return value.decimal;
+      return static_cast<double_t>(value.integer);
+    }
 
     std::string toJsonString() const;
   };
@@ -84,8 +94,34 @@ namespace winrsls::json {
   static_assert(element_like<Number>,
                 "Number does not satisfy the concept element_like.");
 
-  bool operator==(const Number& lhs, const Number& rhs) noexcept;
-  std::ostream& operator<<(std::ostream& out, const Number& value);
+  constexpr bool operator==(const Number& lhs, const Number& rhs) noexcept {
+    constexpr auto abs = [](double_t n) { return n < 0 ? -n : n; };
+    constexpr auto fequals = [](double_t a, double_t b) {
+      return abs(a - b) <=
+             std::numeric_limits<double_t>::epsilon() *
+               std::max(static_cast<double_t>(1), std::max(abs(a), abs(b)));
+    };
+
+    if (lhs.kind == rhs.kind) {
+      switch (lhs.kind) {
+        case Number::Kind::Integer:
+          return lhs.value.integer == rhs.value.integer;
+        case Number::Kind::Decimal:
+          return fequals(lhs.value.decimal, rhs.value.decimal);
+      }
+    } else {
+      switch (lhs.kind) {
+        case Number::Kind::Integer:
+          return fequals(static_cast<double_t>(lhs.value.integer),
+                         rhs.value.decimal);
+        case Number::Kind::Decimal:
+          return fequals(lhs.value.decimal,
+                         static_cast<double_t>(rhs.value.integer));
+      }
+    }
+
+    return false;
+  }
 } // namespace winrsls::json
 
 #endif // WINRSLS_JSON_NUMBER_H_

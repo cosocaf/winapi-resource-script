@@ -13,7 +13,6 @@
 #ifndef WINRSLS_JSON_BOOLEAN_H_
 #define WINRSLS_JSON_BOOLEAN_H_
 
-#include <ostream>
 #include <string>
 
 #include "element_like.h"
@@ -22,19 +21,23 @@ namespace winrsls::json {
   class Boolean {
     bool value;
 
-    friend bool operator==(const Boolean& lhs, const Boolean& rhs) noexcept;
+    friend constexpr bool operator==(const Boolean& lhs, const Boolean& rhs) noexcept;
 
   public:
-    Boolean(bool value = false) noexcept;
+    constexpr Boolean() noexcept : value(false){};
+    constexpr Boolean(bool value) noexcept : value(value) {}
 
-    std::string toJsonString() const;
+    constexpr std::string toJsonString() const {
+      return value ? "true" : "false";
+    }
   };
 
   static_assert(element_like<Boolean>,
                 "Boolean does not satisfy the concept element_like.");
 
-  bool operator==(const Boolean& lhs, const Boolean& rhs) noexcept;
-  std::ostream& operator<<(std::ostream& out, Boolean value);
+  constexpr bool operator==(const Boolean& lhs, const Boolean& rhs) noexcept {
+    return lhs.value == rhs.value;
+  }
 } // namespace winrsls::json
 
 #endif // WINRSLS_JSON_BOOLEAN_H_

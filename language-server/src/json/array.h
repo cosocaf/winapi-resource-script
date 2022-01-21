@@ -28,12 +28,14 @@ namespace winrsls::json {
     friend bool operator==(const Array& lhs, const Array& rhs);
 
   public:
-    Array(const std::vector<Element>& value = {});
-    Array(std::vector<Element>&& value) noexcept;
-    Array(std::initializer_list<Element> value);
+    constexpr Array() : value(std::vector<Element>()) {}
+    constexpr Array(const std::vector<Element>& value) : value(value) {}
+    constexpr Array(std::vector<Element>&& value) noexcept
+      : value(std::move(value)) {}
+    constexpr Array(std::initializer_list<Element> value) : value(value) {}
 
     template <element_like T>
-    static Array from(std::initializer_list<T> value) {
+    constexpr static Array from(std::initializer_list<T> value) {
       std::vector<Element> result;
       result.reserve(value.size());
       for (const auto& elem : value) {
@@ -42,17 +44,21 @@ namespace winrsls::json {
       return Array(std::move(result));
     }
 
-    size_t length() const noexcept;
-    size_t size() const noexcept;
+    constexpr size_t length() const noexcept { return value.size(); }
+    constexpr size_t size() const noexcept { return value.size(); }
 
-    Element& back();
-    const Element& back() const;
+    constexpr Element& back() { return value.back(); }
+    constexpr const Element& back() const { return value.back(); }
 
-    Element& operator[](size_t idx);
-    Element& operator[](const Number& idx);
+    constexpr Element& operator[](size_t idx) { return value[idx]; }
+    constexpr Element& operator[](const Number& idx) {
+      return value[idx.asInt()];
+    }
 
-    const Element& operator[](size_t idx) const;
-    const Element& operator[](const Number& idx) const;
+    constexpr const Element& operator[](size_t idx) const { return value[idx]; }
+    constexpr const Element& operator[](const Number& idx) const {
+      return value[idx.asInt()];
+    }
 
     std::string toJsonString() const;
   };
@@ -61,8 +67,6 @@ namespace winrsls::json {
                 "Array does not satisfy the concept element_like.");
 
   bool operator==(const Array& lhs, const Array& rhs);
-
-  std::ostream& operator<<(std::ostream& out, const Array& value);
 } // namespace winrsls::json
 
 #endif // WINRSLS_JSON_ARRAY_H_

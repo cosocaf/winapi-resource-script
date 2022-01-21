@@ -47,8 +47,4 @@ namespace winrsls::json {
   bool operator==(const Object& lhs, const Object& rhs) {
     return lhs.value == rhs.value;
   }
-
-  std::ostream& operator<<(std::ostream& out, const Object& value) {
-    return out << value.toJsonString();
-  }
 } // namespace winrsls::json

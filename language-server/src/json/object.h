@@ -53,8 +53,6 @@ namespace winrsls::json {
                 "Object does not satisfy the concept element_like.");
 
   bool operator==(const Object& lhs, const Object& rhs);
-
-  std::ostream& operator<<(std::ostream& out, const Object& value);
 } // namespace winrsls::json
 
 #endif // WINRSLS_JSON_OBJECT_H_
