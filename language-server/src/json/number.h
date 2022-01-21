@@ -13,6 +13,7 @@
 #ifndef WINRSLS_JSON_NUMBER_H_
 #define WINRSLS_JSON_NUMBER_H_
 
+#include <compare>
 #include <string>
 
 #include "element_like.h"
@@ -31,8 +32,8 @@ namespace winrsls::json {
     Kind kind;
     Value value;
 
-    friend constexpr bool operator==(const Number& lhs,
-                                     const Number& rhs) noexcept;
+    friend constexpr std::partial_ordering operator<=>(const Number& lhs,
+                                                       const Number& rhs);
 
   public:
     constexpr Number() noexcept : value{.integer = 0}, kind(Kind::Integer) {}
@@ -94,33 +95,25 @@ namespace winrsls::json {
   static_assert(element_like<Number>,
                 "Number does not satisfy the concept element_like.");
 
-  constexpr bool operator==(const Number& lhs, const Number& rhs) noexcept {
-    constexpr auto abs = [](double_t n) { return n < 0 ? -n : n; };
-    constexpr auto fequals = [](double_t a, double_t b) {
-      return abs(a - b) <=
-             std::numeric_limits<double_t>::epsilon() *
-               std::max(static_cast<double_t>(1), std::max(abs(a), abs(b)));
-    };
-
+  constexpr std::partial_ordering operator<=>(const Number& lhs,
+                                              const Number& rhs) {
     if (lhs.kind == rhs.kind) {
       switch (lhs.kind) {
         case Number::Kind::Integer:
-          return lhs.value.integer == rhs.value.integer;
+          return lhs.value.integer <=> rhs.value.integer;
         case Number::Kind::Decimal:
-          return fequals(lhs.value.decimal, rhs.value.decimal);
+          return lhs.value.decimal <=> rhs.value.decimal;
       }
     } else {
       switch (lhs.kind) {
         case Number::Kind::Integer:
-          return fequals(static_cast<double_t>(lhs.value.integer),
-                         rhs.value.decimal);
+          return static_cast<double_t>(lhs.value.integer) <=> rhs.value.decimal;
         case Number::Kind::Decimal:
-          return fequals(lhs.value.decimal,
-                         static_cast<double_t>(rhs.value.integer));
+          return lhs.value.decimal <=> static_cast<double_t>(rhs.value.integer);
       }
     }
 
-    return false;
+    return std::partial_ordering::unordered;
   }
 } // namespace winrsls::json
 
