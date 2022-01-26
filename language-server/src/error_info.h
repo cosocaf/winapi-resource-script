@@ -20,10 +20,10 @@ namespace winrsls {
     std::string msg;
 
   public:
-    ErrorInfo(const std::string& msg);
-    ErrorInfo(std::string&& msg);
-    ErrorInfo(std::string_view msg);
-    ErrorInfo(const char* msg);
+    explicit ErrorInfo(const std::string& msg);
+    explicit ErrorInfo(std::string&& msg);
+    explicit ErrorInfo(std::string_view msg);
+    explicit ErrorInfo(const char* msg);
 
     const std::string& getMessage() const;
     std::string& getMessage();
