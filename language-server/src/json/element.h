@@ -211,11 +211,19 @@ namespace winrsls::json {
       return Storage::as<std::remove_cvref_t<T>>(value);
     }
     template <element_like_without_element... T>
-    inline Union<std::remove_cvref_t<T>...> as_union() const {
+    inline Union<std::remove_cvref_t<T>...> as_union() const& {
       assert(either<std::remove_cvref_t<T>...>());
       std::optional<Union<std::remove_cvref_t<T>...>> result;
       (void)std::initializer_list{
         (void(_assign<std::remove_cvref_t<T>>(result)), 0)...};
+      return result.value();
+    }
+    template <element_like_without_element... T>
+    inline Union<std::remove_cvref_t<T>...> as_union() && {
+      assert(either<std::remove_cvref_t<T>...>());
+      std::optional<Union<std::remove_cvref_t<T>...>> result;
+      (void)std::initializer_list{
+        (void(_moveAssign<std::remove_cvref_t<T>>(result)), 0)...};
       return result.value();
     }
 
@@ -226,6 +234,12 @@ namespace winrsls::json {
     void _assign(std::optional<Union<U...>>& result) const {
       if (Storage::is<T>(value)) {
         result.emplace(Storage::as<T>(value));
+      }
+    }
+    template <typename T, typename... U>
+    void _moveAssign(std::optional<Union<U...>>& result) const {
+      if (Storage::is<T>(value)) {
+        result.emplace(std::move(Storage::as<T>(value)));
       }
     }
   };
