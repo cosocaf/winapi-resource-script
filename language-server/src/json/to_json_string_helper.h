@@ -232,7 +232,7 @@ namespace winrsls::json::internal {
   void toJsonString(std::string& output, const char (&name)[N],
                     const std::optional<T>& value) {
     if (value) {
-      toJsonString(output, name, value.get());
+      toJsonString(output, name, value.value());
     }
   }
 
